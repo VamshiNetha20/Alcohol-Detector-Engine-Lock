@@ -1,0 +1,87 @@
+#include <LiquidCrystal.h>
+
+// Pin definitions
+#define MQ3_DO 2          // Digital out from MQ3
+#define MQ3_AO A1         // Analog out from MQ3
+#define BUZZER A3         // Buzzer pin
+#define LED A2            // LED moved to analog pin A2
+#define MOTOR_PIN1 12     // Motor control 1
+#define MOTOR_PIN2 13     // Motor control 2
+
+// Initialize LCD: RS=8, E=9, D4=4, D5=5, D6=6, D7=7
+LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
+
+void setup() {
+  pinMode(MQ3_DO, INPUT);
+  pinMode(MQ3_AO, INPUT);
+  pinMode(BUZZER, OUTPUT);
+  pinMode(LED, OUTPUT);
+  pinMode(MOTOR_PIN1, OUTPUT);
+  pinMode(MOTOR_PIN2, OUTPUT);
+
+  lcd.begin(16, 2);
+  lcd.clear();
+
+  // Startup indication - Buzzer and LED blink 2 times (30ms each)
+  for (int i = 0; i < 2; i++) {
+    digitalWrite(BUZZER, HIGH);
+    digitalWrite(LED, HIGH);
+    delay(30);
+    digitalWrite(BUZZER, LOW);
+    digitalWrite(LED, LOW);
+    delay(30);
+  }
+
+  // Welcome screen
+  lcd.setCursor(0, 0);
+  lcd.print("  Welcome User ");
+  lcd.setCursor(0, 1);
+  lcd.print("Alcohol Detector");
+  delay(2000);
+
+  // Motor starts by default (safe mode)
+  digitalWrite(MOTOR_PIN1, HIGH);
+  digitalWrite(MOTOR_PIN2, LOW);
+}
+
+void loop() {
+  int alcoholDetected = digitalRead(MQ3_DO); // LOW = alcohol detected
+  int alcoholLevel = analogRead(MQ3_AO);     // Analog level for context
+
+  if (alcoholDetected == LOW) {
+    // Stop motor
+    digitalWrite(MOTOR_PIN1, LOW);
+    digitalWrite(MOTOR_PIN2, LOW);
+
+    // LCD display
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Alcohol Detected!");
+    lcd.setCursor(0, 1);
+    lcd.print("Vehicle Locked");
+
+    // Continuous blinking pattern while alcohol is detected
+    while (digitalRead(MQ3_DO) == LOW) {
+      digitalWrite(BUZZER, HIGH);
+      digitalWrite(LED, HIGH);
+      delay(80);
+      digitalWrite(BUZZER, LOW);
+      digitalWrite(LED, LOW);
+      delay(80);
+    }
+
+  } else {
+    // Safe mode
+    digitalWrite(MOTOR_PIN1, HIGH);
+    digitalWrite(MOTOR_PIN2, LOW);
+    noTone(BUZZER);
+    digitalWrite(LED, LOW);
+
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("No Alcohol Detect");
+    lcd.setCursor(0, 1);
+    lcd.print("Drive Safe");
+    delay(500); // Adjust for readability
+  }
+}

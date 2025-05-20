@@ -1,0 +1,61 @@
+# Alcohol Detector with Engine Lock
+
+## Overview
+This project is an Arduino-based alcohol detection system designed to enhance vehicle safety. It uses an MQ-3 sensor to detect alcohol levels in the air. If alcohol is detected above a predefined threshold, the system locks the engine (simulated by a motor), activates a buzzer, lights a red LED, and displays a warning on a 16x2 LCD. If no alcohol is detected, the engine runs, a green LED lights up, and a "Drive Safe" message is shown on the LCD.
+
+## Hardware Requirements
+- Arduino Uno
+- MQ-3 Alcohol Sensor
+- 16x2 LCD Display (with I2C module optional)
+- DC Motor (to simulate engine)
+- Buzzer
+- Red LED (for alcohol detection warning)
+- Green LED (for safe status)
+- 9V Battery (or power supply)
+- Breadboard and jumper wires
+- 2N2222 Transistor (for motor control)
+
+## Circuit Diagram
+The simulation diagram below shows the connections between the components:
+
+![Simulation Diagram](diagram.png)
+
+## Pin Connections
+- **MQ-3 Sensor**:
+  - Digital Output (DO): Pin 2
+  - Analog Output (AO): Pin A1
+- **LCD**:
+  - RS: Pin 8
+  - E: Pin 9
+  - D4-D7: Pins 4, 5, 6, 7
+- **Motor**:
+  - Motor Control 1: Pin 12
+  - Motor Control 2: Pin 13
+- **Buzzer**: Pin A3
+- **Red LED**: Pin A2 (can be considered red)
+- **Green LED**: Optional
+
+## How to Run the Project
+1. Connect the hardware components as shown in the circuit diagram.
+2. Upload the `AlcoholDetector.ino` sketch to your Arduino Uno using the Arduino IDE.
+3. Power the Arduino (via USB or 9V battery).
+4. The LCD will display "Alcohol Detector" during initialization.
+5. The system will continuously monitor alcohol levels:
+   - If alcohol is detected, the motor stops, the buzzer sounds, the red LED turns on, and the LCD shows "Alcohol Detected, Vehicle Locked."
+   - If no alcohol is detected, the motor runs, and the green LED (if used) turns on, and the LCD shows "No Alcohol Detect, Drive Safe."
+
+## Code Explanation
+- The MQ-3 sensor reads alcohol levels via analog input (A1).
+- The digital output pin is used for threshold detection (LOW = alcohol present).
+- If alcohol is detected, the system locks the engine (turns off the motor), activates the buzzer, and lights the red LED.
+- Otherwise, the motor runs, and the green LED (if implemented) indicates a safe state.
+- The LCD provides real-time feedback to the user.
+
+## Dependencies
+- **LiquidCrystal Library**: Ensure this library is installed in your Arduino IDE (`Sketch > Include Library > LiquidCrystal`).
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+Feel free to fork this repository, make improvements, and submit pull requests. For major changes, please open an issue to discuss them first.
